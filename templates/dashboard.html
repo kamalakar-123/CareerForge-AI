@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - AI Interview Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-dashboard">
+        <div class="container">
+            <div class="nav-brand">
+                <h2>🎯 AI Interview Platform</h2>
+            </div>
+            <div class="nav-links">
+                <span class="nav-user">👤 {{ session.username }}</span>
+                <a href="{{ url_for('logout') }}" class="btn btn-sm btn-secondary">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-container">
+        <div class="container">
+            <!-- Welcome Section -->
+            <div class="dashboard-header">
+                <h1>Welcome, {{ session.username }}! 👋</h1>
+                <p>Ready to practice for your next interview?</p>
+            </div>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- Statistics Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <h3>{{ progress.interview_count if progress else 0 }}</h3>
+                        <p>Total Interviews</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-info">
+                        <h3>{{ "%.1f"|format(progress.average_score if progress else 0) }}</h3>
+                        <p>Average Score</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-info">
+                        <h3>{{ "%.1f"|format(progress.last_score if progress else 0) }}</h3>
+                        <p>Last Score</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">🔥</div>
+                    <div class="stat-info">
+                        <h3>Active</h3>
+                        <p>Status</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Cards -->
+            <div class="action-cards">
+                <!-- Upload Resume -->
+                <div class="action-card">
+                    <div class="action-icon">📄</div>
+                    <h3>Upload Resume</h3>
+                    <p>Upload your resume for personalized interview questions</p>
+                    <a href="{{ url_for('upload_resume') }}" class="btn btn-primary">Upload Now</a>
+                </div>
+
+                <!-- Start Interview -->
+                <div class="action-card action-card-highlight">
+                    <div class="action-icon">🎤</div>
+                    <h3>Start Mock Interview</h3>
+                    <p>Practice with our AI interviewer and improve your skills</p>
+                    <a href="{{ url_for('interview_setup') }}" class="btn btn-primary">Start Interview</a>
+                </div>
+
+                <!-- Practice Assignments -->
+                <div class="action-card">
+                    <div class="action-icon">💻</div>
+                    <h3>AI Assignment Lab</h3>
+                    <p>Generate AI-powered coding assignments and MCQs to practice</p>
+                    <a href="{{ url_for('assignment_lab') }}" class="btn btn-primary">Assignment Lab</a>
+                </div>
+
+                <!-- View Progress -->
+                <div class="action-card">
+                    <div class="action-icon">📈</div>
+                    <h3>Progress Analytics</h3>
+                    <p>Track your improvement over time with detailed analytics</p>
+                    <a href="{{ url_for('progress') }}" class="btn btn-primary">View Progress</a>
+                </div>
+            </div>
+
+            <!-- Recent Interviews -->
+            {% if recent_interviews %}
+            <div class="recent-section">
+                <h2>Recent Interviews</h2>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Role</th>
+                                <th>Difficulty</th>
+                                <th>Score</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for interview in recent_interviews %}
+                            <tr>
+                                <td>{{ interview.interview_date[:16] }}</td>
+                                <td>{{ interview.role }}</td>
+                                <td>
+                                    <span class="badge badge-{{ interview.difficulty }}">
+                                        {{ interview.difficulty.capitalize() }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if interview.overall_score %}
+                                        <strong>{{ "%.1f"|format(interview.overall_score) }}/10</strong>
+                                    {% else %}
+                                        <span class="text-muted">N/A</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge badge-{{ 'success' if interview.status == 'completed' else 'warning' }}">
+                                        {{ interview.status.capitalize() }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if interview.status == 'completed' %}
+                                        <a href="{{ url_for('results', interview_id=interview.id) }}" class="btn btn-sm btn-secondary">View Results</a>
+                                    {% else %}
+                                        <span class="text-muted">In Progress</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <h3>No interviews yet</h3>
+                <p>Start your first mock interview to begin tracking your progress</p>
+                <a href="{{ url_for('interview_setup') }}" class="btn btn-primary">Start Interview</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 AI Interview Platform</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

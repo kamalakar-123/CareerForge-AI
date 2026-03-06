@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progress Analytics - AI Interview Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-dashboard">
+        <div class="container">
+            <div class="nav-brand">
+                <h2>🎯 AI Interview Platform</h2>
+            </div>
+            <div class="nav-links">
+                <a href="{{ url_for('dashboard') }}" class="nav-link">Dashboard</a>
+                <span class="nav-user">👤 {{ session.username }}</span>
+                <a href="{{ url_for('logout') }}" class="btn btn-sm btn-secondary">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Progress Section -->
+    <div class="page-container">
+        <div class="container">
+            <div class="page-header">
+                <h1>📈 Your Progress Analytics</h1>
+                <p>Track your improvement over time</p>
+            </div>
+
+            <!-- Statistics Overview -->
+            <div class="stats-grid">
+                <div class="stat-card stat-card-blue">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <h3>{{ progress.interview_count if progress else 0 }}</h3>
+                        <p>Total Interviews Completed</p>
+                    </div>
+                </div>
+
+                <div class="stat-card stat-card-green">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-info">
+                        <h3>{{ "%.1f"|format(progress.average_score if progress else 0) }}</h3>
+                        <p>Average Score</p>
+                    </div>
+                </div>
+
+                <div class="stat-card stat-card-purple">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-info">
+                        <h3>{{ "%.1f"|format(progress.last_score if progress else 0) }}</h3>
+                        <p>Latest Score</p>
+                    </div>
+                </div>
+
+                <div class="stat-card stat-card-orange">
+                    <div class="stat-icon">📈</div>
+                    <div class="stat-info">
+                        <h3>
+                            {% if progress and progress.interview_count > 1 %}
+                                {% set improvement = progress.last_score - progress.average_score %}
+                                {% if improvement > 0 %}
+                                    +{{ "%.1f"|format(improvement) }}
+                                {% else %}
+                                    {{ "%.1f"|format(improvement) }}
+                                {% endif %}
+                            {% else %}
+                                --
+                            {% endif %}
+                        </h3>
+                        <p>Improvement Trend</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart Section -->
+            <div class="chart-section">
+                <h2>Score Progress Over Time</h2>
+                <div class="chart-container">
+                    <canvas id="progressChart"></canvas>
+                </div>
+
+                {% if not progress or progress.interview_count == 0 %}
+                <div class="empty-state">
+                    <h3>No interview data yet</h3>
+                    <p>Complete interviews to see your progress visualization</p>
+                    <a href="{{ url_for('interview_setup') }}" class="btn btn-primary">Start Your First Interview</a>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Performance Insights -->
+            <div class="insights-section">
+                <h2>💡 Performance Insights</h2>
+                <div class="insights-grid">
+                    {% if progress %}
+                        {% if progress.interview_count > 0 %}
+                            <div class="insight-card">
+                                <h4>🎯 Consistency</h4>
+                                <p>
+                                    {% if progress.interview_count >= 5 %}
+                                        Great job! You've completed {{ progress.interview_count }} interviews. Keep up the consistent practice!
+                                    {% elif progress.interview_count >= 3 %}
+                                        You're building momentum with {{ progress.interview_count }} interviews. Try to practice regularly!
+                                    {% else %}
+                                        You're just getting started. Complete more interviews to track your progress better.
+                                    {% endif %}
+                                </p>
+                            </div>
+
+                            <div class="insight-card">
+                                <h4>📊 Performance Level</h4>
+                                <p>
+                                    {% if progress.average_score >= 8 %}
+                                        Excellent! Your average score of {{ "%.1f"|format(progress.average_score) }} shows strong performance. Consider trying harder difficulty levels.
+                                    {% elif progress.average_score >= 6 %}
+                                        Good progress! Your average score of {{ "%.1f"|format(progress.average_score) }} is solid. Keep practicing to reach excellence.
+                                    {% elif progress.average_score >= 4 %}
+                                        You're improving! Current average is {{ "%.1f"|format(progress.average_score) }}. Focus on fundamental concepts and practice more.
+                                    {% else %}
+                                        Keep practicing! Review basics and start with easier difficulty levels to build confidence.
+                                    {% endif %}
+                                </p>
+                            </div>
+
+                            <div class="insight-card">
+                                <h4>🚀 Next Steps</h4>
+                                <p>
+                                    {% if progress.last_score > progress.average_score %}
+                                        You're trending upward! Your last score ({{ "%.1f"|format(progress.last_score) }}) is above your average. Great momentum!
+                                    {% elif progress.last_score < progress.average_score %}
+                                        Your last score was a bit lower. Don't worry - review the feedback and try again!
+                                    {% else %}
+                                        You're maintaining consistent performance. Challenge yourself with different roles or difficulty levels!
+                                    {% endif %}
+                                </p>
+                            </div>
+
+                            <div class="insight-card">
+                                <h4>🎓 Recommendations</h4>
+                                <p>
+                                    Based on your performance, we recommend:
+                                    {% if progress.average_score >= 7 %}
+                                        Try advanced topics and help others in the community.
+                                    {% else %}
+                                        Focus on coding assignments and review fundamental concepts.
+                                    {% endif %}
+                                </p>
+                            </div>
+                        {% else %}
+                            <div class="insight-card">
+                                <h4>👋 Welcome!</h4>
+                                <p>Start your first interview to begin tracking your progress and getting insights.</p>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="progress-actions">
+                <a href="{{ url_for('interview_setup') }}" class="btn btn-primary btn-large">
+                    Start New Interview 🚀
+                </a>
+                <a href="{{ url_for('assignments') }}" class="btn btn-secondary btn-large">
+                    Practice Assignments 📝
+                </a>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline">
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 AI Interview Platform</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        // Chart.js configuration
+        const chartData = {{ chart_data|safe }};
+
+        if (chartData.scores && chartData.scores.length > 0) {
+            const ctx = document.getElementById('progressChart').getContext('2d');
+            const progressChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartData.dates,
+                    datasets: [{
+                        label: 'Interview Scores',
+                        data: chartData.scores,
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                        },
+                        title: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                afterLabel: function(context) {
+                                    return 'Role: ' + chartData.roles[context.dataIndex];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 10,
+                            ticks: {
+                                stepSize: 1
+                            },
+                            title: {
+                                display: true,
+                                text: 'Score (out of 10)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Interview Date'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Results - AI Interview Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-dashboard">
+        <div class="container">
+            <div class="nav-brand">
+                <h2>🎯 AI Interview Platform</h2>
+            </div>
+            <div class="nav-links">
+                <a href="{{ url_for('dashboard') }}" class="nav-link">Dashboard</a>
+                <span class="nav-user">👤 {{ session.username }}</span>
+                <a href="{{ url_for('logout') }}" class="btn btn-sm btn-secondary">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Results Section -->
+    <div class="page-container">
+        <div class="container">
+            <div class="page-header">
+                <h1>🎉 Interview Results</h1>
+                <p>Here's how you performed in your {{ result.role }} interview</p>
+            </div>
+
+            <!-- Results Cards -->
+            <div class="results-container">
+                <!-- Overall Score -->
+                <div class="result-card result-card-main">
+                    <h2>Overall Score</h2>
+                    <div class="score-circle">
+                        <div class="score-value">{{ "%.1f"|format(result.overall_score) }}</div>
+                        <div class="score-max">/10</div>
+                    </div>
+                    <div class="score-label">
+                        {% if result.overall_score >= 8 %}
+                            <span class="badge badge-success">Excellent! 🌟</span>
+                        {% elif result.overall_score >= 6 %}
+                            <span class="badge badge-info">Good Job! 👍</span>
+                        {% elif result.overall_score >= 4 %}
+                            <span class="badge badge-warning">Keep Practicing! 💪</span>
+                        {% else %}
+                            <span class="badge badge-danger">Need Improvement 📚</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Score Breakdown -->
+                <div class="score-breakdown">
+                    <h3>Score Breakdown</h3>
+                    
+                    <div class="score-item">
+                        <div class="score-label-wrapper">
+                            <span class="score-label">Technical Knowledge</span>
+                            <span class="score-number">{{ "%.1f"|format(result.technical_score) }}/10</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ (result.technical_score / 10 * 100)|int }}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="score-item">
+                        <div class="score-label-wrapper">
+                            <span class="score-label">Communication Skills</span>
+                            <span class="score-number">{{ "%.1f"|format(result.communication_score) }}/10</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ (result.communication_score / 10 * 100)|int }}%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interview Details -->
+                <div class="interview-details">
+                    <h3>Interview Details</h3>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Role:</span>
+                            <span class="detail-value">{{ result.role }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Difficulty:</span>
+                            <span class="detail-value">
+                                <span class="badge badge-{{ result.difficulty }}">
+                                    {{ result.difficulty.capitalize() }}
+                                </span>
+                            </span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Date:</span>
+                            <span class="detail-value">{{ result.interview_date[:16] }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feedback -->
+                <div class="feedback-section">
+                    <h3>💡 Feedback & Recommendations</h3>
+                    <div class="feedback-content">
+                        <p>{{ result.feedback }}</p>
+                    </div>
+
+                    <div class="recommendations">
+                        <h4>Next Steps:</h4>
+                        <ul>
+                            {% if result.overall_score < 6 %}
+                                <li>Review fundamental concepts for {{ result.role }}</li>
+                                <li>Practice with easier difficulty level</li>
+                                <li>Complete coding assignments to strengthen basics</li>
+                            {% elif result.overall_score < 8 %}
+                                <li>Focus on improving communication clarity</li>
+                                <li>Practice more interviews at the same level</li>
+                                <li>Work on coding assignments for better preparation</li>
+                            {% else %}
+                                <li>Try harder difficulty level to challenge yourself</li>
+                                <li>Explore advanced topics in {{ result.role }}</li>
+                                <li>Help others by sharing your knowledge</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="result-actions">
+                    <a href="{{ url_for('interview_setup') }}" class="btn btn-primary btn-large">
+                        Start New Interview 🚀
+                    </a>
+                    <a href="{{ url_for('assignments') }}" class="btn btn-secondary btn-large">
+                        Practice Assignments 📝
+                    </a>
+                    <a href="{{ url_for('progress') }}" class="btn btn-secondary btn-large">
+                        View Progress 📊
+                    </a>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline">
+                        Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 AI Interview Platform</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

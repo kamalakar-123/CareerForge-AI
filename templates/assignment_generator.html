@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assignment Generator - AI Interview Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body style="background: #f5f7fa; min-height: 100vh;">
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-dashboard" style="background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+        <div class="container">
+            <div class="nav-brand">
+                <h2 style="color: #2c3e50; font-weight: 700;">
+                    <i class="fas fa-code" style="color: #3498db;"></i> AI Assignment Lab
+                </h2>
+            </div>
+            <div class="nav-links">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-sm btn-secondary">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+                <a href="{{ url_for('assignments') }}" class="btn btn-sm" style="background: #3498db; color: white; border: none;">
+                    <i class="fas fa-list"></i> View Assignments
+                </a>
+                <a href="{{ url_for('logout') }}" class="btn btn-sm btn-outline">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container" style="max-width: 1000px; margin: 3rem auto; padding: 0 1rem;">
+        <!-- Header -->
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <h1 style="color: #2c3e50; font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;">
+                AI-Powered Assignment Generator
+            </h1>
+            <p style="color: #7f8c8d; font-size: 1.1rem;">
+                Generate personalized coding challenges and MCQs tailored to your learning needs
+            </p>
+        </div>
+
+        <!-- Generator Form -->
+        <div class="card" style="padding: 3rem; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+            <form id="generatorForm">
+                <!-- Assignment Type Selection -->
+                <div style="margin-bottom: 2.5rem;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 0.75rem; color: #2c3e50; font-size: 0.95rem;">
+                        <i class="fas fa-layer-group" style="color: #3498db; margin-right: 0.5rem;"></i>
+                        Assignment Type
+                    </label>
+                    <div class="assignment-type-container" style="display: flex; gap: 1rem; overflow-x: auto; padding: 0.5rem 0;">
+                        <div class="type-option" data-type="mixed">
+                            <input type="radio" name="assignment_type" value="mixed" id="typeMixed" checked hidden>
+                            <label for="typeMixed" class="type-btn type-mixed" style="flex: 1; min-width: 150px; padding: 1.2rem; border: 2px solid #9b59b6; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s; font-weight: 600; color: #9b59b6; background: white; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-random" style="font-size: 1.5rem;"></i>
+                                <span>Mixed</span>
+                                <small style="font-size: 0.75rem; font-weight: 400; opacity: 0.8;">Coding + MCQ</small>
+                            </label>
+                        </div>
+                        <div class="type-option" data-type="coding">
+                            <input type="radio" name="assignment_type" value="coding" id="typeCoding" hidden>
+                            <label for="typeCoding" class="type-btn type-coding" style="flex: 1; min-width: 150px; padding: 1.2rem; border: 2px solid #3498db; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s; font-weight: 600; color: #3498db; background: white; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-code" style="font-size: 1.5rem;"></i>
+                                <span>Coding Only</span>
+                                <small style="font-size: 0.75rem; font-weight: 400; opacity: 0.8;">15 Problems</small>
+                            </label>
+                        </div>
+                        <div class="type-option" data-type="mcq">
+                            <input type="radio" name="assignment_type" value="mcq" id="typeMCQ" hidden>
+                            <label for="typeMCQ" class="type-btn type-mcq" style="flex: 1; min-width: 150px; padding: 1.2rem; border: 2px solid #e67e22; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s; font-weight: 600; color: #e67e22; background: white; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-check-square" style="font-size: 1.5rem;"></i>
+                                <span>MCQ Only</span>
+                                <small style="font-size: 0.75rem; font-weight: 400; opacity: 0.8;">15 Questions</small>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Role Selection (HackerRank Style) -->
+                <div style="margin-bottom: 2.5rem;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 0.75rem; color: #2c3e50; font-size: 0.95rem;">
+                        <i class="fas fa-laptop-code" style="color: #3498db; margin-right: 0.5rem;"></i>
+                        Select Technology / Domain
+                    </label>
+                    <div class="custom-select-wrapper">
+                        <select id="roleSelect" name="role" required style="width: 100%; padding: 0.9rem 1rem; border: 2px solid #e1e8ed; border-radius: 8px; font-size: 1rem; color: #2c3e50; background: white; cursor: pointer; transition: all 0.3s; appearance: none; background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27currentColor%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1.2rem;">
+                            <option value="" disabled selected>Choose a technology...</option>
+                            <option value="Python">🐍 Python</option>
+                            <option value="DSA">📊 Data Structures & Algorithms</option>
+                            <option value="Java">☕ Java</option>
+                            <option value="JavaScript">💛 JavaScript</option>
+                            <option value="HTML">🌐 HTML</option>
+                            <option value="CSS">🎨 CSS</option>
+                            <option value="SQL">🗄️ SQL</option>
+                            <option value="C">⚙️ C</option>
+                            <option value="C++">⚡ C++</option>
+                            <option value="C#">💠 C#</option>
+                            <option value="Backend Development">🔧 Backend Development</option>
+                            <option value="Frontend Development">🎭 Frontend Development</option>
+                            <option value="Full Stack Development">🚀 Full Stack Development</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Difficulty Selection (HackerRank Style) -->
+                <div style="margin-bottom: 2.5rem;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 0.75rem; color: #2c3e50; font-size: 0.95rem;">
+                        <i class="fas fa-sliders-h" style="color: #3498db; margin-right: 0.5rem;"></i>
+                        Difficulty Level
+                    </label>
+                    <div class="difficulty-container" style="display: flex; gap: 1rem;">
+                        <div class="difficulty-option" data-difficulty="Easy">
+                            <input type="radio" name="difficulty" value="Easy" id="diffEasy" required hidden>
+                            <label for="diffEasy" class="difficulty-btn difficulty-easy" style="flex: 1; padding: 1rem; border: 2px solid #27ae60; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s; font-weight: 600; color: #27ae60; background: white;">
+                                <i class="fas fa-check-circle" style="margin-right: 0.5rem;"></i>Easy
+                            </label>
+                        </div>
+                        <div class="difficulty-option" data-difficulty="Medium">
+                            <input type="radio" name="difficulty" value="Medium" id="diffMedium" required hidden>
+                            <label for="diffMedium" class="difficulty-btn difficulty-medium" style="flex: 1; padding: 1rem; border: 2px solid #f39c12; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s; font-weight: 600; color: #f39c12; background: white;">
+                                <i class="fas fa-bolt" style="margin-right: 0.5rem;"></i>Medium
+                            </label>
+                        </div>
+                        <div class="difficulty-option" data-difficulty="Hard">
+                            <input type="radio" name="difficulty" value="Hard" id="diffHard" required hidden>
+                            <label for="diffHard" class="difficulty-btn difficulty-hard" style="flex: 1; padding: 1rem; border: 2px solid #e74c3c; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s; font-weight: 600; color: #e74c3c; background: white;">
+                                <i class="fas fa-fire" style="margin-right: 0.5rem;"></i>Hard
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Topic Input (With Suggestions) -->
+                <div style="margin-bottom: 2.5rem;">
+                    <label for="topic" style="display: block; font-weight: 600; margin-bottom: 0.75rem; color: #2c3e50; font-size: 0.95rem;">
+                        <i class="fas fa-tags" style="color: #3498db; margin-right: 0.5rem;"></i>
+                        Topic / Concept
+                    </label>
+                    <input 
+                        type="text" 
+                        id="topic" 
+                        name="topic" 
+                        list="topicSuggestions"
+                        class="form-input"
+                        placeholder="e.g., Lists, Recursion, Loops, Arrays, Joins, Trees, Graphs, OOP"
+                        required
+                        style="width: 100%; padding: 0.9rem 1rem; border: 2px solid #e1e8ed; border-radius: 8px; font-size: 1rem; color: #2c3e50; background: white; transition: all 0.3s;">
+                    
+                    <datalist id="topicSuggestions">
+                        <option value="Lists">
+                        <option value="Loops">
+                        <option value="Functions">
+                        <option value="Recursion">
+                        <option value="Arrays">
+                        <option value="Strings">
+                        <option value="Object-Oriented Programming">
+                        <option value="Data Structures">
+                        <option value="Algorithms">
+                        <option value="SQL Joins">
+                        <option value="Database Queries">
+                        <option value="Trees">
+                        <option value="Graphs">
+                        <option value="Sorting">
+                        <option value="Searching">
+                        <option value="Dynamic Programming">
+                    </datalist>
+                    
+                    <small style="color: #7f8c8d; margin-top: 0.5rem; display: block; font-size: 0.9rem;">
+                        <i class="fas fa-info-circle" style="color: #3498db;"></i>
+                        Type to see suggestions or enter your own topic
+                    </small>
+                </div>
+
+                <!-- Generate Button (HackerRank Style) -->
+                <button type="submit" id="generateBtn" class="generate-btn" style="width: 100%; padding: 1.2rem; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 700; color: white; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); text-transform: uppercase; letter-spacing: 0.5px;">
+                    <i class="fas fa-robot" style="margin-right: 0.75rem;"></i>
+                    Generate 15 AI Assignments
+                </button>
+
+                <!-- Loading Indicator -->
+                <div id="loadingIndicator" style="display: none; text-align: center; margin-top: 2rem; padding: 2rem; background: #f8f9fa; border-radius: 8px;">
+                    <div class="loading-spinner" style="display: inline-block; width: 50px; height: 50px; border: 5px solid #e1e8ed; border-top: 5px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                    <p style="margin-top: 1rem; color: #7f8c8d; font-weight: 600; font-size: 1.1rem;">
+                        <i class="fas fa-magic" style="color: #3498db; margin-right: 0.5rem;"></i>
+                        AI is generating your assignments...
+                    </p>
+                    <p style="color: #95a5a6; font-size: 0.9rem; margin-top: 0.5rem;">This may take 10-15 seconds</p>
+                </div>
+
+                <!-- Success Message -->
+                <div id="successMessage" style="display: none; margin-top: 2rem; padding: 1.5rem; background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%); border: 2px solid #28a745; border-radius: 8px; color: #155724; text-align: center;">
+                </div>
+            </form>
+        </div>
+
+        <!-- Feature Cards -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 3rem;">
+            <div class="feature-card" style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); text-align: center; transition: all 0.3s;">
+                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                    <i class="fas fa-code" style="font-size: 1.8rem; color: white;"></i>
+                </div>
+                <h3 style="color: #2c3e50; margin-bottom: 0.5rem; font-size: 1.2rem; font-weight: 600;">Coding Problems</h3>
+                <p style="color: #7f8c8d; line-height: 1.6;">Write and execute code with instant feedback and AI-powered hints</p>
+            </div>
+            
+            <div class="feature-card" style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); text-align: center; transition: all 0.3s;">
+                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                    <i class="fas fa-tasks" style="font-size: 1.8rem; color: white;"></i>
+                </div>
+                <h3 style="color: #2c3e50; margin-bottom: 0.5rem; font-size: 1.2rem; font-weight: 600;">MCQ Questions</h3>
+                <p style="color: #7f8c8d; line-height: 1.6;">Test your theoretical knowledge with detailed explanations</p>
+            </div>
+            
+            <div class="feature-card" style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); text-align: center; transition: all 0.3s;">
+                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                    <i class="fas fa-lightbulb" style="font-size: 1.8rem; color: white;"></i>
+                </div>
+                <h3 style="color: #2c3e50; margin-bottom: 0.5rem; font-size: 1.2rem; font-weight: 600;">AI Mentor</h3>
+                <p style="color: #7f8c8d; line-height: 1.6;">Get personalized hints and guidance when you're stuck</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="background: white; border-top: 1px solid #e1e8ed; padding: 2rem 0; margin-top: 4rem; text-align: center;">
+        <div class="container">
+            <p style="color: #7f8c8d; font-size: 0.95rem;">
+                <i class="fas fa-magic" style="color: #3498db;"></i>
+                Powered by Gemini AI | Practice makes perfect
+            </p>
+        </div>
+    </footer>
+
+    <!-- Styles -->
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Select Dropdown Enhancement */
+        #roleSelect:hover, #roleSelect:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            outline: none;
+        }
+
+        #topic:hover, #topic:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            outline: none;
+        }
+
+        /* Difficulty Button Styles */
+        .difficulty-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        input[type="radio"]:checked + .difficulty-easy {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white !important;
+            border-color: #27ae60 !important;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
+        }
+
+        input[type="radio"]:checked + .difficulty-medium {
+            background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);
+            color: white !important;
+            border-color: #f39c12 !important;
+            box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4);
+        }
+
+        input[type="radio"]:checked + .difficulty-hard {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white !important;
+            border-color: #e74c3c !important;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+        }
+
+        /* Assignment Type Button Styles */
+        .type-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        input[type="radio"]:checked + .type-mixed {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            color: white !important;
+            border-color: #9b59b6 !important;
+            box-shadow: 0 4px 15px rgba(155, 89, 182, 0.4);
+        }
+
+        input[type="radio"]:checked + .type-coding {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white !important;
+            border-color: #3498db !important;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        input[type="radio"]:checked + .type-mcq {
+            background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+            color: white !important;
+            border-color: #e67e22 !important;
+            box-shadow: 0 4px 15px rgba(230, 126, 34, 0.4);
+        }
+
+        input[type="radio"]:checked + .type-btn small {
+            opacity: 1 !important;
+        }
+
+        /* Scroll bar styling for assignment type */
+        .assignment-type-container::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .assignment-type-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .assignment-type-container::-webkit-scrollbar-thumb {
+            background: #3498db;
+            border-radius: 10px;
+        }
+
+        .assignment-type-container::-webkit-scrollbar-thumb:hover {
+            background: #2980b9;
+        }
+
+        /* Generate Button Hover */
+        .generate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .generate-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Feature Card Hover */
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .difficulty-container {
+                flex-direction: column;
+            }
+            
+            .container {
+                padding: 0 1rem !important;
+            }
+        }
+    </style>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        // Form submission
+        document.getElementById('generatorForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const assignmentType = document.querySelector('input[name="assignment_type"]:checked')?.value;
+            const role = document.getElementById('roleSelect').value;
+            const difficulty = document.querySelector('input[name="difficulty"]:checked')?.value;
+            const topic = document.getElementById('topic').value.trim();
+            
+            if (!assignmentType) {
+                alert('Please select an assignment type');
+                return;
+            }
+            
+            if (!role) {
+                alert('Please select a technology');
+                return;
+            }
+            
+            if (!difficulty) {
+                alert('Please select a difficulty level');
+                return;
+            }
+            
+            if (!topic) {
+                alert('Please enter a topic');
+                return;
+            }
+            
+            const generateBtn = document.getElementById('generateBtn');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const successMessage = document.getElementById('successMessage');
+            
+            // Show loading
+            generateBtn.disabled = true;
+            generateBtn.style.opacity = '0.6';
+            loadingIndicator.style.display = 'block';
+            successMessage.style.display = 'none';
+            
+            // Scroll to loading indicator
+            loadingIndicator.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            try {
+                const response = await fetch('/generate_assignments', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        assignment_type: assignmentType,
+                        role: role, 
+                        difficulty: difficulty, 
+                        topic: topic 
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    const typeLabel = assignmentType === 'coding' ? 'Coding Problems' : 
+                                     assignmentType === 'mcq' ? 'MCQ Questions' : 
+                                     'Mixed Assignments';
+                    
+                    successMessage.innerHTML = `
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">✨</div>
+                        <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem; font-weight: 700;">Assignment Group Created!</h3>
+                        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+                            Generated <strong>${data.count} Questions</strong> for ${role} - ${topic} (${difficulty})
+                        </p>
+                        <div style="display: flex; gap: 1rem; justify-content: center;">
+                            <a href="/assignment_group/${data.group_id}" class="btn" style="display: inline-block; padding: 0.75rem 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 6px; font-weight: 600; transition: all 0.3s;">
+                                <i class="fas fa-play" style="margin-right: 0.5rem;"></i>
+                                Start Solving
+                            </a>
+                            <a href="{{ url_for('assignments') }}" class="btn" style="display: inline-block; padding: 0.75rem 2rem; background: #6c757d; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; transition: all 0.3s;">
+                                <i class="fas fa-list" style="margin-right: 0.5rem;"></i>
+                                View All Groups
+                            </a>
+                        </div>
+                    `;
+                    successMessage.style.display = 'block';
+                    
+                    // Scroll to success message
+                    setTimeout(() => {
+                        successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 100);
+                    
+                    // Reset form
+                    this.reset();
+                    // Re-check the default mixed option
+                    document.getElementById('typeMixed').checked = true;
+                } else {
+                    alert('Failed to generate assignments: ' + (data.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.style.opacity = '1';
+                loadingIndicator.style.display = 'none';
+            }
+        });
+
+        // Add smooth select animation
+        document.getElementById('roleSelect').addEventListener('change', function() {
+            this.style.borderColor = '#3498db';
+            setTimeout(() => {
+                this.style.borderColor = '#e1e8ed';
+            }, 300);
+        });
+    </script>
+</body>
+</html>

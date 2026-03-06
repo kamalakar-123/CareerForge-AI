@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ group.name }} - AI Interview Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-dashboard">
+        <div class="container">
+            <div class="nav-brand">
+                <h2>📚 {{ group.name }}</h2>
+            </div>
+            <div class="nav-links">
+                <a href="{{ url_for('assignments') }}" class="btn btn-sm btn-secondary">← Back to Assignments</a>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-sm btn-outline">Dashboard</a>
+                <a href="{{ url_for('logout') }}" class="btn btn-sm btn-outline">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container" style="margin-top: 2rem;">
+        <!-- Header with Progress -->
+        <div class="card" style="padding: 2rem; margin-bottom: 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h1 style="color: white; margin-bottom: 0.5rem;">{{ group.name }}</h1>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem;">
+                        <span style="background: rgba(255, 255, 255, 0.2); padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.85rem;">
+                            🏷️ {{ group.role }}
+                        </span>
+                        <span style="background: rgba(255, 255, 255, 0.2); padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.85rem;">
+                            📌 {{ group.topic }}
+                        </span>
+                        <span style="background: rgba(255, 255, 255, 0.2); padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.85rem;">
+                            {{ group.difficulty }}
+                        </span>
+                        <span style="background: rgba(255, 255, 255, 0.2); padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.85rem;">
+                            {% if group.assignment_type == 'coding' %}💻 Coding{% elif group.assignment_type == 'mcq' %}✅ MCQ{% else %}🔀 Mixed{% endif %}
+                        </span>
+                    </div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;">
+                        {{ solved_count }} / {{ total_questions }}
+                    </div>
+                    <div style="font-size: 0.9rem; opacity: 0.9;">
+                        Questions Solved
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div style="margin-top: 1.5rem;">
+                <div style="background: rgba(255, 255, 255, 0.2); height: 12px; border-radius: 6px; overflow: hidden;">
+                    <div style="background: {% if solved_count == total_questions %}#10b981{% else %}white{% endif %}; height: 100%; width: {{ (solved_count / total_questions * 100)|round }}%; transition: width 0.5s;"></div>
+                </div>
+                <p style="margin-top: 0.5rem; font-size: 0.9rem; opacity: 0.9;">
+                    {{ (solved_count / total_questions * 100)|round }}% Complete
+                </p>
+            </div>
+        </div>
+
+        <!-- Questions List -->
+        <div class="card" style="padding: 2rem;">
+            <h2 style="color: #1e293b; margin-bottom: 1.5rem;">Questions</h2>
+            
+            <div style="display: grid; gap: 1rem;">
+                {% for assignment in assignments %}
+                <div class="question-item {% if assignment.is_solved %}solved{% endif %}" 
+                     onclick="window.location.href='{{ url_for('solve_assignment', assignment_id=assignment.id) }}'"
+                     style="display: flex; align-items: center; gap: 1rem; padding: 1.25rem; border: 2px solid {% if assignment.is_solved %}#10b981{% else %}#e2e8f0{% endif %}; border-radius: 12px; cursor: pointer; transition: all 0.3s; background: {% if assignment.is_solved %}#f0fdf4{% else %}white{% endif %};">
+                    
+                    <!-- Question Number & Status -->
+                    <div style="flex-shrink: 0; width: 50px; height: 50px; border-radius: 50%; background: {% if assignment.is_solved %}linear-gradient(135deg, #10b981 0%, #059669 100%){% else %}linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%){% endif %}; display: flex; align-items: center; justify-content: center; color: {% if assignment.is_solved %}white{% else %}#64748b{% endif %}; font-weight: 700; font-size: 1.2rem;">
+                        {% if assignment.is_solved %}
+                            ✓
+                        {% else %}
+                            {{ assignment.question_number }}
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Question Info -->
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <span style="padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600; background: {% if assignment.type == 'coding' %}#dbeafe{% else %}#fef3c7{% endif %}; color: {% if assignment.type == 'coding' %}#1e40af{% else %}#92400e{% endif %};">
+                                {% if assignment.type == 'coding' %}💻 Coding{% else %}✅ MCQ{% endif %}
+                            </span>
+                            {% if assignment.is_solved %}
+                            <span style="padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600; background: #10b981; color: white;">
+                                Solved
+                            </span>
+                            {% endif %}
+                        </div>
+                        <h3 style="color: #1e293b; margin: 0; font-size: 1rem;">
+                            {% if assignment.type == 'coding' %}
+                                {{ assignment.question_data.title }}
+                            {% else %}
+                                {{ assignment.question_data.question[:100] }}{% if assignment.question_data.question|length > 100 %}...{% endif %}
+                            {% endif %}
+                        </h3>
+                    </div>
+                    
+                    <!-- Arrow Icon -->
+                    <div style="flex-shrink: 0; color: #64748b; font-size: 1.5rem;">
+                        →
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>💡 Complete all questions to master this topic!</p>
+        </div>
+    </footer>
+
+    <style>
+        .question-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-color: #3b82f6;
+        }
+        
+        .question-item.solved:hover {
+            border-color: #059669;
+        }
+    </style>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

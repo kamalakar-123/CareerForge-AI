@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Interview Platform - Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h2>🎯 AI Interview Platform</h2>
+            </div>
+            <div class="nav-links">
+                <a href="{{ url_for('index') }}" class="nav-link active">Home</a>
+                <a href="{{ url_for('login') }}" class="nav-link">Login</a>
+                <a href="{{ url_for('register') }}" class="nav-link btn-primary">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Master Your Technical Interviews with AI</h1>
+                <p class="hero-subtitle">Practice real interview scenarios, get instant feedback, and track your progress with our AI-powered platform.</p>
+                <div class="hero-buttons">
+                    <a href="{{ url_for('register') }}" class="btn btn-primary btn-large">Start Free Practice</a>
+                    <a href="{{ url_for('login') }}" class="btn btn-secondary btn-large">Login</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">Platform Features</h2>
+            <div class="features-grid">
+                <!-- Feature 1 -->
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI Mock Interviews</h3>
+                    <p>Practice with our intelligent AI interviewer that adapts to your responses and asks relevant follow-up questions.</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="feature-card">
+                    <div class="feature-icon">🎤</div>
+                    <h3>Voice Input Support</h3>
+                    <p>Answer questions using your voice with our integrated speech recognition technology.</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="feature-card">
+                    <div class="feature-icon">📄</div>
+                    <h3>Resume Analysis</h3>
+                    <p>Upload your resume and get personalized interview questions based on your skills and experience.</p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Progress Analytics</h3>
+                    <p>Track your performance over time with detailed analytics and visualizations.</p>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="feature-card">
+                    <div class="feature-icon">✍️</div>
+                    <h3>Coding Assignments</h3>
+                    <p>Practice coding problems tailored to your target role and difficulty level.</p>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="feature-card">
+                    <div class="feature-icon">💡</div>
+                    <h3>Instant Feedback</h3>
+                    <p>Get immediate AI-powered evaluation of your answers with actionable feedback.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Create Account</h3>
+                    <p>Sign up for free and set up your profile</p>
+                </div>
+                <div class="step-arrow">→</div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Choose Role</h3>
+                    <p>Select your target role and difficulty level</p>
+                </div>
+                <div class="step-arrow">→</div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Start Interview</h3>
+                    <p>Practice with our AI interviewer</p>
+                </div>
+                <div class="step-arrow">→</div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Get Feedback</h3>
+                    <p>Review your performance and improve</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <h2>Ready to Ace Your Next Interview?</h2>
+            <p>Join thousands of students preparing for their dream jobs</p>
+            <a href="{{ url_for('register') }}" class="btn btn-primary btn-large">Get Started Now</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 AI Interview Platform. Built with ❤️ for students.</p>
+        </div>
+    </footer>
+</body>
+</html>

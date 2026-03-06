@@ -1,0 +1,25 @@
+# AI Interview Platform - Python Dependencies
+# Install with: pip install -r requirements.txt
+
+# Flask Framework
+Flask==3.0.0
+Werkzeug==3.0.1
+
+# Environment Variables
+python-dotenv==1.0.0
+
+# HTTP Requests for Gemini API
+requests==2.31.0
+
+# Gemini AI SDK
+google-generativeai>=0.8.0
+
+# Resume Processing
+PyPDF2==3.0.1
+python-docx==1.1.0
+
+# Additional utilities (included with Python but listed for clarity)
+# sqlite3 - Built-in with Python
+# datetime - Built-in with Python
+# functools - Built-in with Python
+# json - Built-in with Python

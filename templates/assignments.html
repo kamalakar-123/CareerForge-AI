@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coding Assignments - AI Interview Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-dashboard">
+        <div class="container">
+            <div class="nav-brand">
+                <h2>🎯 AI Interview Platform</h2>
+            </div>
+            <div class="nav-links">
+                <a href="{{ url_for('dashboard') }}" class="nav-link">Dashboard</a>
+                <span class="nav-user">👤 {{ session.username }}</span>
+                <a href="{{ url_for('logout') }}" class="btn btn-sm btn-secondary">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Assignments Section -->
+    <div class="page-container">
+        <div class="container">
+            <div class="page-header">
+                <h1>✍️ Coding Assignments</h1>
+                <p>Practice coding problems to improve your skills</p>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <div class="filter-label">Filter by Role:</div>
+                <div class="filter-buttons">
+                    <a href="{{ url_for('assignments', role='all') }}" 
+                       class="btn btn-sm {{ 'btn-primary' if current_filter == 'all' else 'btn-outline' }}">
+                        All Roles
+                    </a>
+                    {% for role in roles %}
+                    <a href="{{ url_for('assignments', role=role.role) }}" 
+                       class="btn btn-sm {{ 'btn-primary' if current_filter == role.role else 'btn-outline' }}">
+                        {{ role.role }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Assignments List -->
+            <div class="assignments-container">
+                {% if assignments %}
+                    {% for assignment in assignments %}
+                    <div class="assignment-card">
+                        <div class="assignment-header">
+                            <div class="assignment-meta">
+                                <span class="badge badge-{{ assignment.difficulty }}">
+                                    {{ assignment.difficulty.capitalize() }}
+                                </span>
+                                <span class="assignment-role">{{ assignment.role }}</span>
+                            </div>
+                            <div class="assignment-id">
+                                #{{ assignment.id }}
+                            </div>
+                        </div>
+                        
+                        <div class="assignment-content">
+                            <h3>Assignment {{ assignment.id }}</h3>
+                            <p>{{ assignment.assignment_text }}</p>
+                        </div>
+
+                        <div class="assignment-footer">
+                            <div class="assignment-tips">
+                                <strong>💡 Tips:</strong>
+                                <ul>
+                                    <li>Think about edge cases</li>
+                                    <li>Write clean, readable code</li>
+                                    <li>Test your solution</li>
+                                </ul>
+                            </div>
+                            <button class="btn btn-primary" onclick="toggleSolution({{ assignment.id }})">
+                                Show Hints
+                            </button>
+                        </div>
+
+                        <!-- Hidden Solution Section -->
+                        <div id="solution-{{ assignment.id }}" class="assignment-solution" style="display: none;">
+                            <h4>💡 Hints & Approach:</h4>
+                            {% if 'string' in assignment.assignment_text.lower() %}
+                                <ul>
+                                    <li>Use string slicing or iteration</li>
+                                    <li>Consider using built-in string methods</li>
+                                    <li>Think about time complexity</li>
+                                </ul>
+                                <pre><code># Example approach
+def solve_problem(input_data):
+    # Your solution here
+    pass</code></pre>
+                            {% elif 'list' in assignment.assignment_text.lower() or 'array' in assignment.assignment_text.lower() %}
+                                <ul>
+                                    <li>Consider using sorting or iteration</li>
+                                    <li>Think about using sets or dictionaries for optimization</li>
+                                    <li>Handle empty lists</li>
+                                </ul>
+                                <pre><code># Example approach
+def solve_problem(arr):
+    # Your solution here
+    pass</code></pre>
+                            {% elif 'API' in assignment.assignment_text or 'REST' in assignment.assignment_text %}
+                                <ul>
+                                    <li>Use proper HTTP methods (GET, POST, PUT, DELETE)</li>
+                                    <li>Validate input data</li>
+                                    <li>Handle errors gracefully</li>
+                                </ul>
+                                <pre><code># Example Flask route
+@app.route('/api/endpoint', methods=['POST'])
+def endpoint():
+    # Your implementation
+    pass</code></pre>
+                            {% else %}
+                                <ul>
+                                    <li>Break down the problem into smaller steps</li>
+                                    <li>Write pseudocode first</li>
+                                    <li>Test with sample inputs</li>
+                                </ul>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <h3>No assignments found</h3>
+                        <p>Try selecting a different role filter</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Practice Tips -->
+            <div class="tips-section">
+                <h2>📚 How to Practice Effectively</h2>
+                <div class="tips-grid">
+                    <div class="tip-card">
+                        <div class="tip-icon">1️⃣</div>
+                        <h4>Understand First</h4>
+                        <p>Read the problem carefully and understand requirements before coding</p>
+                    </div>
+                    <div class="tip-card">
+                        <div class="tip-icon">2️⃣</div>
+                        <h4>Plan Your Approach</h4>
+                        <p>Think about the algorithm and data structures you'll need</p>
+                    </div>
+                    <div class="tip-card">
+                        <div class="tip-icon">3️⃣</div>
+                        <h4>Write Clean Code</h4>
+                        <p>Use meaningful variable names and add comments</p>
+                    </div>
+                    <div class="tip-card">
+                        <div class="tip-icon">4️⃣</div>
+                        <h4>Test Thoroughly</h4>
+                        <p>Test with different inputs including edge cases</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="back-link">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">← Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 AI Interview Platform</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        function toggleSolution(id) {
+            const solution = document.getElementById('solution-' + id);
+            if (solution.style.display === 'none') {
+                solution.style.display = 'block';
+            } else {
+                solution.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Resume - AI Interview Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-dashboard">
+        <div class="container">
+            <div class="nav-brand">
+                <h2>🎯 AI Interview Platform</h2>
+            </div>
+            <div class="nav-links">
+                <a href="{{ url_for('dashboard') }}" class="nav-link">Dashboard</a>
+                <span class="nav-user">👤 {{ session.username }}</span>
+                <a href="{{ url_for('logout') }}" class="btn btn-sm btn-secondary">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Upload Resume Section -->
+    <div class="page-container">
+        <div class="container">
+            <div class="page-header">
+                <h1>📄 Upload Your Resume</h1>
+                <p>Upload your resume to get personalized interview questions</p>
+            </div>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="upload-container">
+                <div class="upload-box">
+                    <div class="upload-icon">📎</div>
+                    <h2>Upload Resume</h2>
+                    <p>Supported formats: PDF, DOCX (Max size: 16MB)</p>
+
+                    <form action="{{ url_for('upload_resume') }}" method="POST" enctype="multipart/form-data" id="uploadForm">
+                        <div class="file-input-wrapper">
+                            <input type="file" 
+                                   id="resume" 
+                                   name="resume" 
+                                   accept=".pdf,.doc,.docx"
+                                   required>
+                            <label for="resume" class="file-label">
+                                <span id="fileName">Choose File</span>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block" id="uploadBtn">
+                            <span id="uploadText">Upload Resume</span>
+                            <span id="uploadLoader" style="display: none;">⏳ Analyzing...</span>
+                        </button>
+                    </form>
+                    
+                    <!-- Loading Message -->
+                    <div id="loadingMessage" style="display: none; margin-top: 1.5rem; padding: 1rem; background: #eff6ff; border: 2px solid #3b82f6; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">⏳</div>
+                        <div style="font-weight: 600; color: #1e40af; margin-bottom: 0.25rem;">Processing Your Resume</div>
+                        <div style="font-size: 0.9rem; color: #64748b;">Extracting text and analyzing with AI... This may take 10-15 seconds.</div>
+                    </div>
+
+                    <div class="upload-info">
+                        <h4>Why upload your resume?</h4>
+                        <ul>
+                            <li>✓ Get questions tailored to your skills</li>
+                            <li>✓ Practice real scenarios based on your experience</li>
+                            <li>✓ Improve interview relevance</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="back-link">
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">← Back to Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 AI Interview Platform</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        // File name display
+        document.getElementById('resume').addEventListener('change', function(e) {
+            const fileName = e.target.files[0] ? e.target.files[0].name : 'Choose File';
+            document.getElementById('fileName').textContent = fileName;
+        });
+        
+        // Form submission with loading state
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            const uploadBtn = document.getElementById('uploadBtn');
+            const uploadText = document.getElementById('uploadText');
+            const uploadLoader = document.getElementById('uploadLoader');
+            const loadingMessage = document.getElementById('loadingMessage');
+            
+            // Disable button and show loading
+            uploadBtn.disabled = true;
+            uploadBtn.style.opacity = '0.6';
+            uploadText.style.display = 'none';
+            uploadLoader.style.display = 'inline';
+            loadingMessage.style.display = 'block';
+            
+            // Scroll to loading message
+            loadingMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+    </script>
+</body>
+</html>

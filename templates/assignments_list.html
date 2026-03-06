@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignments - AI Interview Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-dashboard">
+        <div class="container">
+            <div class="nav-brand">
+                <h2>📚 Assignment Lab</h2>
+            </div>
+            <div class="nav-links">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-sm btn-secondary">Dashboard</a>
+                <a href="{{ url_for('assignment_lab') }}" class="btn btn-sm btn-primary">Generate New</a>
+                <a href="{{ url_for('logout') }}" class="btn btn-sm btn-outline">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container" style="margin-top: 2rem;">
+        <!-- Header with Filters -->
+        <div style="margin-bottom: 2rem;">
+            <h1 style="color: var(--primary-color); margin-bottom: 1rem;">Available Assignments</h1>
+            
+            <!-- Filters -->
+            <div class="card" style="padding: 1.5rem;">
+                <form method="GET" action="{{ url_for('assignments') }}" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; align-items: end;">
+                    <div>
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #334155;">Role</label>
+                        <select name="role" class="form-input" style="width: 100%; padding: 0.5rem; border: 2px solid #e2e8f0; border-radius: 8px;">
+                            <option value="">All Roles</option>
+                            {% for role in roles %}
+                            <option value="{{ role.role }}" {% if filters.role == role.role %}selected{% endif %}>{{ role.role }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #334155;">Difficulty</label>
+                        <select name="difficulty" class="form-input" style="width: 100%; padding: 0.5rem; border: 2px solid #e2e8f0; border-radius: 8px;">
+                            <option value="">All Levels</option>
+                            <option value="Easy" {% if filters.difficulty == 'Easy' %}selected{% endif %}>Easy</option>
+                            <option value="Medium" {% if filters.difficulty == 'Medium' %}selected{% endif %}>Medium</option>
+                            <option value="Hard" {% if filters.difficulty == 'Hard' %}selected{% endif %}>Hard</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #334155;">Topic</label>
+                        <select name="topic" class="form-input" style="width: 100%; padding: 0.5rem; border: 2px solid #e2e8f0; border-radius: 8px;">
+                            <option value="">All Topics</option>
+                            {% for topic in topics %}
+                            <option value="{{ topic.topic }}" {% if filters.topic == topic.topic %}selected{% endif %}>{{ topic.topic }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #334155;">Type</label>
+                        <select name="type" class="form-input" style="width: 100%; padding: 0.5rem; border: 2px solid #e2e8f0; border-radius: 8px;">
+                            <option value="">All Types</option>
+                            <option value="coding" {% if filters.type == 'coding' %}selected{% endif %}>Coding</option>
+                            <option value="mcq" {% if filters.type == 'mcq' %}selected{% endif %}>MCQ</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Assignments Grid -->
+        {% if assignment_groups %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem;">
+            {% for group in assignment_groups %}
+            <div class="card assignment-card" style="padding: 1.5rem; transition: transform 0.3s, box-shadow 0.3s; position: relative;">
+                <!-- Progress Badge -->
+                <div style="position: absolute; top: -10px; right: -10px; background: {% if group.solved_count == group.total_questions %}linear-gradient(135deg, #10b981 0%, #059669 100%){% else %}linear-gradient(135deg, #3b82f6 0%, #2563eb 100%){% endif %}; color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; font-weight: 700; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); z-index: 10;">
+                    {{ group.solved_count }} / {{ group.total_questions }} {% if group.solved_count == group.total_questions %}✓{% endif %}
+                </div>
+                
+                <!-- Group Header -->
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                    <div>
+                        <span class="badge badge-type" style="display: inline-block; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600; background: {% if group.assignment_type == 'coding' %}#dbeafe{% elif group.assignment_type == 'mcq' %}#fef3c7{% else %}#e0e7ff{% endif %}; color: {% if group.assignment_type == 'coding' %}#1e40af{% elif group.assignment_type == 'mcq' %}#92400e{% else %}#4338ca{% endif %};">
+                            {% if group.assignment_type == 'coding' %}💻 Coding{% elif group.assignment_type == 'mcq' %}✅ MCQ{% else %}🔀 Mixed{% endif %}
+                        </span>
+                    </div>
+                    <div>
+                        <span style="display: inline-block; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600; background: {% if group.difficulty == 'Easy' %}#d1fae5{% elif group.difficulty == 'Medium' %}#fed7aa{% else %}#fecaca{% endif %}; color: {% if group.difficulty == 'Easy' %}#065f46{% elif group.difficulty == 'Medium' %}#92400e{% else %}#991b1b{% endif %};">
+                            {{ group.difficulty }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Group Name -->
+                <h3 style="color: #1e293b; margin-bottom: 0.5rem; font-size: 1.1rem;">
+                    {{ group.name }}
+                </h3>
+
+                <!-- Progress Bar -->
+                <div style="margin-bottom: 1rem;">
+                    <div style="background: #e2e8f0; height: 8px; border-radius: 4px; overflow: hidden;">
+                        <div style="background: {% if group.solved_count == group.total_questions %}linear-gradient(90deg, #10b981 0%, #059669 100%){% else %}linear-gradient(90deg, #3b82f6 0%, #2563eb 100%){% endif %}; height: 100%; width: {{ (group.solved_count / group.total_questions * 100)|round }}%; transition: width 0.5s;"></div>
+                    </div>
+                    <p style="color: #64748b; font-size: 0.85rem; margin-top: 0.5rem;">
+                        {{ (group.solved_count / group.total_questions * 100)|round }}% Complete
+                    </p>
+                </div>
+
+                <!-- Assignment Footer -->
+                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <span style="font-size: 0.85rem; color: #64748b;">
+                            🏷️ {{ group.role }}
+                        </span>
+                        <span style="font-size: 0.85rem; color: #64748b;">
+                            📌 {{ group.topic }}
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                    <button class="btn btn-sm btn-primary" onclick="window.location.href='{{ url_for('assignment_group', group_id=group.id) }}'" style="flex: 1;">
+                        📋 View Questions
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteGroup({{ group.id }}, event)" style="padding: 0.5rem 1rem;">
+                        🗑️
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="card" style="padding: 3rem; text-align: center;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">📝</div>
+            <h2 style="color: #64748b; margin-bottom: 1rem;">No Assignments Found</h2>
+            <p style="color: #94a3b8; margin-bottom: 2rem;">
+                Generate your first set of AI-powered assignments to get started!
+            </p>
+            <a href="{{ url_for('assignment_lab') }}" class="btn btn-primary btn-large">
+                🤖 Generate Assignments
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>💡 Keep practicing to master your skills!</p>
+        </div>
+    </footer>
+
+    <style>
+        .assignment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
+            transition: all 0.3s;
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            transform: scale(1.05);
+        }
+    </style>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        function deleteGroup(groupId, event) {
+            event.stopPropagation();
+            
+            if (!confirm('Are you sure you want to delete this assignment group? This will delete all 15 questions and submissions.')) {
+                return;
+            }
+            
+            fetch(`/delete_assignment_group/${groupId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Assignment group deleted successfully!');
+                    location.reload();
+                } else {
+                    alert('Failed to delete assignment group: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while deleting the assignment group.');
+            });
+        }
+    </script>
+</body>
+</html>

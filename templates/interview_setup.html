@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Setup - AI Interview Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-dashboard">
+        <div class="container">
+            <div class="nav-brand">
+                <h2>🎯 AI Interview Platform</h2>
+            </div>
+            <div class="nav-links">
+                <a href="{{ url_for('dashboard') }}" class="nav-link">Dashboard</a>
+                <span class="nav-user">👤 {{ session.username }}</span>
+                <a href="{{ url_for('logout') }}" class="btn btn-sm btn-secondary">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Interview Setup Section -->
+    <div class="page-container">
+        <div class="container">
+            <div class="page-header">
+                <h1>🎤 Setup Your Mock Interview</h1>
+                <p>Select your target role and difficulty level</p>
+            </div>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="setup-container">
+                <form action="{{ url_for('interview_setup') }}" method="POST" id="setupForm">
+                    <!-- Role Selection -->
+                    <div class="form-section">
+                        <h3>Select Your Target Role</h3>
+                        <div class="role-grid">
+                            <label class="role-card">
+                                <input type="radio" name="role" value="Python Developer" required>
+                                <div class="role-content">
+                                    <div class="role-icon">🐍</div>
+                                    <h4>Python Developer</h4>
+                                    <p>Backend, Data Science, Automation</p>
+                                </div>
+                            </label>
+
+                            <label class="role-card">
+                                <input type="radio" name="role" value="Full Stack Developer" required>
+                                <div class="role-content">
+                                    <div class="role-icon">💻</div>
+                                    <h4>Full Stack Developer</h4>
+                                    <p>Frontend, Backend, APIs</p>
+                                </div>
+                            </label>
+
+                            <label class="role-card">
+                                <input type="radio" name="role" value="Data Scientist" required>
+                                <div class="role-content">
+                                    <div class="role-icon">📊</div>
+                                    <h4>Data Scientist</h4>
+                                    <p>ML, Analytics, Statistics</p>
+                                </div>
+                            </label>
+
+                            <label class="role-card">
+                                <input type="radio" name="role" value="DevOps Engineer" required>
+                                <div class="role-content">
+                                    <div class="role-icon">⚙️</div>
+                                    <h4>DevOps Engineer</h4>
+                                    <p>CI/CD, Docker, Kubernetes</p>
+                                </div>
+                            </label>
+
+                            <label class="role-card">
+                                <input type="radio" name="role" value="Frontend Developer" required>
+                                <div class="role-content">
+                                    <div class="role-icon">🎨</div>
+                                    <h4>Frontend Developer</h4>
+                                    <p>React, Vue, JavaScript</p>
+                                </div>
+                            </label>
+
+                            <label class="role-card">
+                                <input type="radio" name="role" value="Backend Developer" required>
+                                <div class="role-content">
+                                    <div class="role-icon">🔧</div>
+                                    <h4>Backend Developer</h4>
+                                    <p>APIs, Databases, Servers</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Difficulty Selection -->
+                    <div class="form-section">
+                        <h3>Select Difficulty Level</h3>
+                        <div class="difficulty-grid">
+                            <label class="difficulty-card difficulty-easy">
+                                <input type="radio" name="difficulty" value="easy" required>
+                                <div class="difficulty-content">
+                                    <div class="difficulty-icon">🟢</div>
+                                    <h4>Easy</h4>
+                                    <p>Basic concepts and fundamentals</p>
+                                </div>
+                            </label>
+
+                            <label class="difficulty-card difficulty-medium">
+                                <input type="radio" name="difficulty" value="medium" required>
+                                <div class="difficulty-content">
+                                    <div class="difficulty-icon">🟡</div>
+                                    <h4>Medium</h4>
+                                    <p>Intermediate topics and scenarios</p>
+                                </div>
+                            </label>
+
+                            <label class="difficulty-card difficulty-hard">
+                                <input type="radio" name="difficulty" value="hard" required>
+                                <div class="difficulty-content">
+                                    <div class="difficulty-icon">🔴</div>
+                                    <h4>Hard</h4>
+                                    <p>Advanced concepts and problem-solving</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="form-actions">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary btn-large">Start Interview 🚀</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 AI Interview Platform</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
